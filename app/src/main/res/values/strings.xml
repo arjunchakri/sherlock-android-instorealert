@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">wmt-navigator</string>
+    <string name="large_text">
+        "Kindly make sure that your location is turned on.\n\n"
+    </string>
+    <string name="action_settings">Settings</string>
+</resources>
