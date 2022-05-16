@@ -8,6 +8,8 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -18,11 +20,16 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.sherlock.database.StaticInmemoryDatabase;
 import com.sherlock.database.data.StoreCoordinate;
 import com.sherlock.databinding.ActivityScrollingBinding;
@@ -39,6 +46,7 @@ public class ScrollingActivity extends AppCompatActivity {
     private ActivityScrollingBinding binding;
 
     private LocationManager locationManager;
+    boolean firebaseActivated = false;
 
 
     private static Location createLocation(String locationName, double latitude, double longitude) {
@@ -165,12 +173,54 @@ public class ScrollingActivity extends AppCompatActivity {
                     .setAction("Action", null).show();
         }
 
+
         FloatingActionButton fab = binding.fab;
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view," Lol, you clicked the snackbar !! ", Snackbar.LENGTH_LONG)
+                if(firebaseActivated) {
+                    Snackbar.make(view," Firebase listener already activated. ", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                    return;
+                }
+                firebaseActivated = true;
+
+                Snackbar.make(view," Starting listener to firebase. ", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+
+                FirebaseDatabase.getInstance().getReference().addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        String msg = String.valueOf(dataSnapshot.getValue());
+
+                        Snackbar.make(view," Firebase value -> " + msg, Snackbar.LENGTH_LONG)
+                                    .setAction("Action", null).show();
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.e("firebase", "Error getting data", databaseError.toException());
+                    }
+                });
+
+//                FirebaseDatabase.getInstance().getReference().get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<DataSnapshot> task) {
+//                        if (!task.isSuccessful()) {
+//                            Log.e("firebase", "Error getting data", task.getException());
+//                            Snackbar.make(view," Firebase fetch FAILED !! ", Snackbar.LENGTH_LONG)
+//                                    .setAction("Action", null).show();
+//                        }
+//                        else {
+//                            String msg = String.valueOf(task.getResult().getValue());
+//                            Log.d("firebase", msg);
+//
+//                            Snackbar.make(view," Firebase value -> " + msg + "!! ", Snackbar.LENGTH_LONG)
+//                                    .setAction("Action", null).show();
+//                        }
+//                    }
+//                });;
+
             }
         });
     }

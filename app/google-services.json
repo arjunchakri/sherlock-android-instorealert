@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "759386918967",
+    "firebase_url": "https://techathon22-wmt-default-rtdb.firebaseio.com",
+    "project_id": "techathon22-wmt",
+    "storage_bucket": "techathon22-wmt.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:759386918967:android:8b52e45fc371f56d652fb2",
+        "android_client_info": {
+          "package_name": "com.sherlock"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "759386918967-tfbvk7n6q7775slm5c4o06qrfjh2dsis.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB14DqMmx7i7VvpzQMofNiSDObAAqm9P34"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "759386918967-tfbvk7n6q7775slm5c4o06qrfjh2dsis.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
