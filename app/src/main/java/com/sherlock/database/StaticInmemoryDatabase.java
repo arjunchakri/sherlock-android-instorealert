@@ -11,13 +11,13 @@ import java.util.Map;
 public class StaticInmemoryDatabase {
 
     public static final float STORE_PROXIMITY = 150f;
-    public static final float AISLE_PROXIMITY = 20f;
+    public static final float AISLE_PROXIMITY = 30f;
 
     /*
         This mapping holds the aisle locations of a particular walmart store.
         This will be cross referenced with the user preferences (wishlist) data.
      */
-    // PER STORE (for now)
+    // PER STORE
     public static final Map<String, StoreCoordinate> STORE_AILE_COORDINATES = new HashMap<String, StoreCoordinate>() {{
         put("aisle-deli", new StoreCoordinate(36.368060d, -94.225434d));
         put("aisle-pharmacy", new StoreCoordinate(36.368512d, -94.224427d));
@@ -26,7 +26,7 @@ public class StaticInmemoryDatabase {
         put("aisle-groceries", new StoreCoordinate(36.368844d, -94.225455d));
     }};
 
-    // PER USER (for now)
+    // PER USER
     public static final Map<String, List<StoreProduct>> USER_PREFERREDPRODUCTS = new HashMap<String, List<StoreProduct>>() {{
         put("aisle-pharmacy", Arrays.asList(
                 new StoreProduct("Benadryl")
