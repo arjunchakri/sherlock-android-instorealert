@@ -14,8 +14,6 @@ import android.media.RingtoneManager;
 import android.os.Build;
 import android.os.Bundle;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -40,13 +38,12 @@ import com.google.firebase.database.ValueEventListener;
 import com.sherlock.database.StaticInmemoryDatabase;
 import com.sherlock.database.data.StoreCoordinate;
 import com.sherlock.databinding.ActivityScrollingBinding;
+import com.sherlock.firebase.FirebaseDBImpl;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedSet;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 public class ScrollingActivity extends AppCompatActivity {
 
@@ -83,7 +80,13 @@ public class ScrollingActivity extends AppCompatActivity {
     private String detectAndComputeAisle(Location currentLocation) {
         StringBuilder builder = new StringBuilder();
 
-        Map<String, StoreCoordinate> storeAileCoordinates = StaticInmemoryDatabase.STORE_AILE_COORDINATES;
+        Map<String, StoreCoordinate> storeAileCoordinates = FirebaseDBImpl.getStoreAisleCoordinates(getApplicationContext()); // StaticInmemoryDatabase.STORE_AILE_COORDINATES; FirebaseDBImpl.getInstance().getStoreAisleCoordinates()
+        if(storeAileCoordinates == null) {
+            int reqCode = 1;
+            Intent intent = new Intent(getApplicationContext(), ScrollingActivity.class);
+            showNotification(this, "Kindly load DB", "Press the floating action button to reload db.", intent, reqCode);
+            return "Initializing DB..";
+        }
         float configuredProximity = StaticInmemoryDatabase.AISLE_PROXIMITY;
 
         Map<Float, String> sortedDistances = new TreeMap<Float, String>();
@@ -117,11 +120,20 @@ public class ScrollingActivity extends AppCompatActivity {
             Float key = entry.getKey();
             String aisleName = entry.getValue();
             if (Float.compare(key, configuredProximity) < 0) {
-                builder.append("\n\n YOU ARE IN -> " + aisleName + " aisle !! \n");
+                List<String> suggestedProducts = FirebaseDBImpl.getPreferredProductNames(aisleName, getApplicationContext());;
 
-                int reqCode = 1;
-                Intent intent = new Intent(getApplicationContext(), ScrollingActivity.class);
-                showNotification(this, "Instore Alert", "YOU ARE IN -> " + aisleName + " aisle !! ", intent, reqCode);
+                String notificationHeader = "YOU ARE IN -> " + aisleName + " aisle !! ";
+                String notificationContent = "Your suggested products are ";
+
+                builder.append("\n\n YOU ARE IN -> " + aisleName + " aisle !! \n");
+                if(suggestedProducts != null) {
+                    builder.append("\n" + String.join(", ", suggestedProducts) + " \n");
+
+                    notificationContent += String.join(", ", suggestedProducts);
+                    int reqCode = 1;
+                    Intent intent = new Intent(getApplicationContext(), ScrollingActivity.class);
+                    showNotification(this, notificationHeader, notificationContent, intent, reqCode);
+                }
             }
         }
 
@@ -198,48 +210,10 @@ public class ScrollingActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(firebaseActivated) {
-                    Snackbar.make(view," Firebase listener already activated. ", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
-                    return;
-                }
-                firebaseActivated = true;
 
-                Snackbar.make(view," Starting listener to firebase. ", Snackbar.LENGTH_LONG)
+                Snackbar.make(view," Starting to sync Firebase data. ", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
-
-                FirebaseDatabase.getInstance().getReference().addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        String msg = String.valueOf(dataSnapshot.getValue());
-
-                        Snackbar.make(view," Firebase value -> " + msg, Snackbar.LENGTH_LONG)
-                                    .setAction("Action", null).show();
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        Log.e("firebase", "Error getting data", databaseError.toException());
-                    }
-                });
-
-//                FirebaseDatabase.getInstance().getReference().get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<DataSnapshot> task) {
-//                        if (!task.isSuccessful()) {
-//                            Log.e("firebase", "Error getting data", task.getException());
-//                            Snackbar.make(view," Firebase fetch FAILED !! ", Snackbar.LENGTH_LONG)
-//                                    .setAction("Action", null).show();
-//                        }
-//                        else {
-//                            String msg = String.valueOf(task.getResult().getValue());
-//                            Log.d("firebase", msg);
-//
-//                            Snackbar.make(view," Firebase value -> " + msg + "!! ", Snackbar.LENGTH_LONG)
-//                                    .setAction("Action", null).show();
-//                        }
-//                    }
-//                });;
+                FirebaseDBImpl.cacheDatabaseToLocal(getApplicationContext(), view);
 
             }
         });
@@ -252,7 +226,7 @@ public class ScrollingActivity extends AppCompatActivity {
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(title)
                 .setContentText(message)
-                .setAutoCancel(true)
+                .setAutoCancel(false)
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                 .setContentIntent(pendingIntent);
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);

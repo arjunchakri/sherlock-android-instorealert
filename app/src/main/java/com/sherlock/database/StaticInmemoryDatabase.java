@@ -3,6 +3,7 @@ package com.sherlock.database;
 import com.sherlock.database.data.StoreCoordinate;
 import com.sherlock.database.data.StoreProduct;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -41,4 +42,20 @@ public class StaticInmemoryDatabase {
         ));
     }};
 
+    public static ArrayList<String> getSuggestedProducts(String aisleName) {
+        List<StoreProduct> storeProducts = USER_PREFERREDPRODUCTS.get(aisleName);
+        if(storeProducts == null) {
+            return null;
+        }
+        ArrayList<String> productDetails = new ArrayList<>();
+        for(StoreProduct storeProduct : storeProducts) {
+            productDetails.add(storeProduct.getProductName());
+        }
+        if (productDetails.isEmpty()) {
+            return null;
+        }
+
+        return productDetails;
+
+    }
 }

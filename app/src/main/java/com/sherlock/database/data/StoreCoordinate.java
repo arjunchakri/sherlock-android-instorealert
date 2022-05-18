@@ -10,6 +10,9 @@ public class StoreCoordinate {
         this.longitude = longitude;
     }
 
+    public StoreCoordinate() {
+    }
+
     public double getLatitude() {
         return latitude;
     }
