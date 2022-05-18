@@ -29,6 +29,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -89,20 +90,21 @@ public class ScrollingActivity extends AppCompatActivity {
         }
         float configuredProximity = StaticInmemoryDatabase.AISLE_PROXIMITY;
 
-        Map<Float, String> sortedDistances = new TreeMap<Float, String>();
+        Map<Float, StoreCoordinate> sortedDistances = new TreeMap<Float, StoreCoordinate>();
         builder.append("\n\nDISTANCES FROM AISLES : !! \n");
 
         for (Map.Entry<String, StoreCoordinate> eachAisle : storeAileCoordinates.entrySet()) {
 
             String aisleName = eachAisle.getKey();
             StoreCoordinate coordinate = eachAisle.getValue();
+            coordinate.setAisleName(aisleName);
 
             float distance = currentLocation.distanceTo(createLocation(aisleName, coordinate.getLatitude(), coordinate.getLongitude())); // meters
 //            if (Float.compare(distance, configuredProximity) < 0) {
 //                aisleName = aisleName + " (*) ";
 //            }
 
-            sortedDistances.put(distance, aisleName);
+            sortedDistances.put(distance, coordinate);
 
 //            builder.append("Looks like you are " + distance + " away from -> " + aisleName + " aisle !! \n");
 //            if (Float.compare(distance, configuredProximity) > 0) {
@@ -111,16 +113,17 @@ public class ScrollingActivity extends AppCompatActivity {
 //            }
         }
 
-        for (Map.Entry<Float, String> each : sortedDistances.entrySet()) {
-            builder.append(each.getKey() + "  -> " + each.getValue() + " aisle !! \n");
+        for (Map.Entry<Float, StoreCoordinate> each : sortedDistances.entrySet()) {
+            builder.append(each.getKey() + "  -> " + each.getValue().getAisleName() + " aisle !! \n");
         }
 
         if(!sortedDistances.isEmpty()) {
-            Map.Entry<Float, String> entry = sortedDistances.entrySet().iterator().next();
+            Map.Entry<Float, StoreCoordinate> entry = sortedDistances.entrySet().iterator().next();
             Float key = entry.getKey();
-            String aisleName = entry.getValue();
+            StoreCoordinate value = entry.getValue();
+            String aisleName = value.getAisleName();
             if (Float.compare(key, configuredProximity) < 0) {
-                List<String> suggestedProducts = FirebaseDBImpl.getPreferredProductNames(aisleName, getApplicationContext());;
+                List<String> suggestedProducts = FirebaseDBImpl.getPreferredProductNames(aisleName, getApplicationContext());
 
                 String notificationHeader = "YOU ARE IN -> " + aisleName + " aisle !! ";
                 String notificationContent = "Your suggested products are ";
@@ -133,6 +136,13 @@ public class ScrollingActivity extends AppCompatActivity {
                     int reqCode = 1;
                     Intent intent = new Intent(getApplicationContext(), ScrollingActivity.class);
                     showNotification(this, notificationHeader, notificationContent, intent, reqCode);
+                }
+
+                String iconName = value.getIcon();
+                ImageView iv = (ImageView) findViewById(R.id.body_mainicon);
+                int identifier = getResources().getIdentifier(iconName, "drawable", getApplicationContext().getPackageName());
+                if(identifier != 0) {
+                    iv.setBackground(getApplicationContext().getResources().getDrawable(identifier));
                 }
             }
         }

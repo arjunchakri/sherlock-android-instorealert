@@ -19,13 +19,13 @@ public class StaticInmemoryDatabase {
         This will be cross referenced with the user preferences (wishlist) data.
      */
     // PER STORE
-    public static final Map<String, StoreCoordinate> STORE_AILE_COORDINATES = new HashMap<String, StoreCoordinate>() {{
-        put("aisle-deli", new StoreCoordinate(36.368060d, -94.225434d));
-        put("aisle-pharmacy", new StoreCoordinate(36.368512d, -94.224427d));
-        put("aisle-freezer", new StoreCoordinate(36.367334d, -94.224675d));
-        put("aisle-clothing", new StoreCoordinate(36.367155d, -94.225202d));
-        put("aisle-groceries", new StoreCoordinate(36.368844d, -94.225455d));
-    }};
+//    public static final Map<String, StoreCoordinate> STORE_AILE_COORDINATES = new HashMap<String, StoreCoordinate>() {{
+//        put("aisle-deli", new StoreCoordinate(36.368060d, -94.225434d));
+//        put("aisle-pharmacy", new StoreCoordinate(36.368512d, -94.224427d));
+//        put("aisle-freezer", new StoreCoordinate(36.367334d, -94.224675d));
+//        put("aisle-clothing", new StoreCoordinate(36.367155d, -94.225202d));
+//        put("aisle-groceries", new StoreCoordinate(36.368844d, -94.225455d));
+//    }};
 
     // PER USER
     public static final Map<String, List<StoreProduct>> USER_PREFERREDPRODUCTS = new HashMap<String, List<StoreProduct>>() {{
