@@ -23,6 +23,16 @@
             />
 
         <TextView
+            android:id="@+id/body_maintextlabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/text_margin"
+            android:layout_gravity="center_horizontal"
+            android:textStyle="bold"
+            android:textSize="40dp"
+            android:text="Aisle name" />
+
+        <TextView
             android:id="@+id/body_maintextview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

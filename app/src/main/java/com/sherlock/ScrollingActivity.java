@@ -144,6 +144,10 @@ public class ScrollingActivity extends AppCompatActivity {
                 if(identifier != 0) {
                     iv.setBackground(getApplicationContext().getResources().getDrawable(identifier));
                 }
+
+
+                TextView textLabel = (TextView) findViewById(R.id.body_maintextlabel);
+                textLabel.setText(aisleName);
             }
         }
 
@@ -196,16 +200,16 @@ public class ScrollingActivity extends AppCompatActivity {
                                 currentLongitude[0] = longitude;
 
                                 String currentLocation = "Latitude:" + location.getLatitude() + "\nLongitude:" + location.getLongitude();
-                                Snackbar.make(parentLayout,
-                                        currentLocation, Snackbar.LENGTH_LONG)
-                                        .setAction("Action", null).show();
+//                                Snackbar.make(parentLayout,
+//                                        currentLocation, Snackbar.LENGTH_LONG)
+//                                        .setAction("Action", null).show();
 
                                 String newTextContent = "YOUR LOCATION:\n" + currentLocation + " \n\n";
                                 newTextContent += calculateDistanceFromLocations(location);
 
                                 newTextContent += detectAndComputeAisle(location);
 
-                                textViewFirst.setText(newTextContent);
+//                                textViewFirst.setText(newTextContent);
                             }
 
                         }
